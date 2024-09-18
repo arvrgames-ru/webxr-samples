@@ -31,8 +31,7 @@ For the URL http://example.com/index.html?particleCount=1000
 WGLUUrl.getInt("particleCount", 100); // URL overrides, returns 1000
 WGLUUrl.getInt("particleSize", 10); // Not in URL, returns default of 10
 */
-var WGLUUrl = (function() {
-
+var WGLUUrl = (function () {
   "use strict";
 
   var urlArgs = null;

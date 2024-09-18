@@ -18,75 +18,75 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // Negates a vector. All componenes except |w| are negated.
-let neg = function(vector) {
-  return {x : -vector.x, y : -vector.y, z : -vector.z, w : vector.w};
-}
+let neg = function (vector) {
+  return { x: -vector.x, y: -vector.y, z: -vector.z, w: vector.w };
+};
 
 // Subtracts 2 vectors.
-let sub = function(lhs, rhs) {
-  if(!((lhs.w == 1 && rhs.w == 1) || (lhs.w == 1 && rhs.w == 0) || (lhs.w == 0 && rhs.w == 0)))
+let sub = function (lhs, rhs) {
+  if (!((lhs.w == 1 && rhs.w == 1) || (lhs.w == 1 && rhs.w == 0) || (lhs.w == 0 && rhs.w == 0)))
     console.error("only point - point, point - line or line - line subtraction is allowed");
-  return {x : lhs.x - rhs.x, y : lhs.y - rhs.y, z : lhs.z - rhs.z, w : lhs.w - rhs.w};
-}
+  return { x: lhs.x - rhs.x, y: lhs.y - rhs.y, z: lhs.z - rhs.z, w: lhs.w - rhs.w };
+};
 
 // Subtracts 2 vectors.
-let add = function(lhs, rhs) {
-  if(!((lhs.w == 0 && rhs.w == 1) || (lhs.w == 1 && rhs.w == 0)))
+let add = function (lhs, rhs) {
+  if (!((lhs.w == 0 && rhs.w == 1) || (lhs.w == 1 && rhs.w == 0)))
     console.error("only line + point or point + line addition is allowed");
 
-  return {x : lhs.x + rhs.x, y : lhs.y + rhs.y, z : lhs.z + rhs.z, w : lhs.w + rhs.w};
-}
+  return { x: lhs.x + rhs.x, y: lhs.y + rhs.y, z: lhs.z + rhs.z, w: lhs.w + rhs.w };
+};
 
 // Scales a vector by a scalar. All components except |w| are scaled.
-let mul = function(vector, scalar) {
-  return {x : vector.x * scalar, y : vector.y * scalar, z : vector.z * scalar, w : vector.w};
-}
+let mul = function (vector, scalar) {
+  return { x: vector.x * scalar, y: vector.y * scalar, z: vector.z * scalar, w: vector.w };
+};
 
 // |matrix| - Float32Array, |input| - point-like dict (must have x, y, z, w)
-export function transform_point_by_matrix (matrix, input) {
+export function transform_point_by_matrix(matrix, input) {
   return {
-    x : matrix[0] * input.x + matrix[4] * input.y + matrix[8] * input.z + matrix[12] * input.w,
-    y : matrix[1] * input.x + matrix[5] * input.y + matrix[9] * input.z + matrix[13] * input.w,
-    z : matrix[2] * input.x + matrix[6] * input.y + matrix[10] * input.z + matrix[14] * input.w,
-    w : matrix[3] * input.x + matrix[7] * input.y + matrix[11] * input.z + matrix[15] * input.w,
+    x: matrix[0] * input.x + matrix[4] * input.y + matrix[8] * input.z + matrix[12] * input.w,
+    y: matrix[1] * input.x + matrix[5] * input.y + matrix[9] * input.z + matrix[13] * input.w,
+    z: matrix[2] * input.x + matrix[6] * input.y + matrix[10] * input.z + matrix[14] * input.w,
+    w: matrix[3] * input.x + matrix[7] * input.y + matrix[11] * input.z + matrix[15] * input.w
   };
 }
 
 // |point| - point-like dict (must have x, y, z, w)
-let normalize_perspective = function(point) {
-  if(point.w == 0 || point.w == 1) return point;
+let normalize_perspective = function (point) {
+  if (point.w == 0 || point.w == 1) return point;
 
   return {
-    x : point.x / point.w,
-    y : point.y / point.w,
-    z : point.z / point.w,
-    w : 1
+    x: point.x / point.w,
+    y: point.y / point.w,
+    z: point.z / point.w,
+    w: 1
   };
-}
+};
 
-let dotProduct = function(lhs, rhs) {
+let dotProduct = function (lhs, rhs) {
   return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
-}
+};
 
-let crossProduct = function(lhs, rhs) {
+let crossProduct = function (lhs, rhs) {
   return {
-    x : lhs.y * rhs.z - lhs.z * rhs.y,
-    y : lhs.z * rhs.x - lhs.x * rhs.z,
-    z : lhs.x * rhs.y - lhs.y * rhs.x,
-    w : 0
-  }
-}
+    x: lhs.y * rhs.z - lhs.z * rhs.y,
+    y: lhs.z * rhs.x - lhs.x * rhs.z,
+    z: lhs.x * rhs.y - lhs.y * rhs.x,
+    w: 0
+  };
+};
 
-let length = function(vector) {
+let length = function (vector) {
   return Math.sqrt(dotProduct(vector, vector));
-}
+};
 
-let normalize = function(vector) {
+let normalize = function (vector) {
   const l = length(vector);
-  return mul(vector, 1.0/l);
-}
+  return mul(vector, 1.0 / l);
+};
 
-let calculateHitMatrix = function(ray_vector, plane_normal, point) {
+let calculateHitMatrix = function (ray_vector, plane_normal, point) {
   // projection of ray_vector onto a plane
   const ray_vector_projection = sub(ray_vector, mul(plane_normal, dotProduct(ray_vector, plane_normal)));
 
@@ -118,7 +118,7 @@ let calculateHitMatrix = function(ray_vector, plane_normal, point) {
   hitMatrix[15] = 1;
 
   return hitMatrix;
-}
+};
 
 // Single plane hit test - doesn't take into account the plane's polygon.
 // |frame| - XRFrame, |ray| - XRRay, |plane| - XRPlane, |frameOfReference| - XRSpace
@@ -133,28 +133,27 @@ let calculateHitMatrix = function(ray_vector, plane_normal, point) {
 // and |plane|'s pose in |frameOfReference| as `pose_matrix`.
 function hitTestPlane(frame, ray, plane, frameOfReference) {
   const plane_pose = frame.getPose(plane.planeSpace, frameOfReference);
-  if(!plane_pose) {
+  if (!plane_pose) {
     return null;
   }
 
-  const plane_normal = transform_point_by_matrix(
-    plane_pose.transform.matrix, {x : 0, y : 1.0, z : 0, w : 0});
+  const plane_normal = transform_point_by_matrix(plane_pose.transform.matrix, { x: 0, y: 1.0, z: 0, w: 0 });
   const plane_center = normalize_perspective(
-      transform_point_by_matrix(
-        plane_pose.transform.matrix, {x : 0, y : 0, z : 0, w : 1.0}));
+    transform_point_by_matrix(plane_pose.transform.matrix, { x: 0, y: 0, z: 0, w: 1.0 })
+  );
 
   const ray_origin = ray.origin;
   const ray_vector = ray.direction;
 
-  const numerator = dotProduct( sub(plane_center, ray_origin), plane_normal);
+  const numerator = dotProduct(sub(plane_center, ray_origin), plane_normal);
   const denominator = dotProduct(ray_vector, plane_normal);
 
-  if(denominator < 0.0001 && denominator > -0.0001) {
+  if (denominator < 0.0001 && denominator > -0.0001) {
     // parallel planes
-    if(numerator < 0.0001 && numerator > -0.0001) {
+    if (numerator < 0.0001 && numerator > -0.0001) {
       // contained in the plane
       console.debug("Ray contained in the plane", plane);
-      return { plane : plane };
+      return { plane: plane };
     } else {
       // no hit
       console.debug("No hit", plane);
@@ -162,13 +161,13 @@ function hitTestPlane(frame, ray, plane, frameOfReference) {
     }
   } else {
     // single point of intersection
-    const d =  numerator / denominator;
-    if(d < 0) {
+    const d = numerator / denominator;
+    if (d < 0) {
       // no hit - plane-line intersection exists but not for half-line
       console.debug("No hit", d, plane);
       return null;
     } else {
-      const point = add(ray_origin, mul(ray_vector, d));  // hit test point coordinates in frameOfReference
+      const point = add(ray_origin, mul(ray_vector, d)); // hit test point coordinates in frameOfReference
 
       let point_on_plane = transform_point_by_matrix(plane_pose.transform.inverse.matrix, point); // hit test point coodinates relative to plane pose
       console.assert(Math.abs(point_on_plane.y) < 0.0001, "Incorrect Y coordinate of mapped point");
@@ -176,13 +175,13 @@ function hitTestPlane(frame, ray, plane, frameOfReference) {
       let hitMatrix = calculateHitMatrix(ray_vector, plane_normal, point);
 
       return {
-        distance : d,
-        plane : plane,
-        ray : ray,
-        point : point,
-        point_on_plane : point_on_plane,
-        hitMatrix : hitMatrix,
-        pose_matrix : plane_pose.transform.matrix
+        distance: d,
+        plane: plane,
+        ray: ray,
+        point: point,
+        point_on_plane: point_on_plane,
+        hitMatrix: hitMatrix,
+        pose_matrix: plane_pose.transform.matrix
       };
     }
   }
@@ -196,15 +195,14 @@ export function hitTest(frame, ray, frameOfReference) {
   let hit_test_results = [];
   planes.forEach(plane => {
     let result = hitTestPlane(frame, ray, plane, frameOfReference);
-    if(result) {
+    if (result) {
       // throw away results with no intersection with plane
       hit_test_results.push(result);
     }
   });
 
   // throw away all strange results (ray lies on plane)
-  let hit_test_results_with_points = hit_test_results.filter(
-    maybe_plane => typeof maybe_plane.point != "undefined");
+  let hit_test_results_with_points = hit_test_results.filter(maybe_plane => typeof maybe_plane.point != "undefined");
 
   // sort results by distance
   hit_test_results_with_points.sort((l, r) => l.distance - r.distance);
@@ -219,11 +217,11 @@ function simplifyPolygon(polygon) {
   let result = [];
 
   let previous_point = polygon[polygon.length - 1];
-  for(let i = 0; i < polygon.length; ++i) {
+  for (let i = 0; i < polygon.length; ++i) {
     const current_point = polygon[i];
 
     const segment = sub(current_point, previous_point);
-    if(length(segment) < 0.001) {
+    if (length(segment) < 0.001) {
       continue;
     }
 
@@ -244,20 +242,16 @@ export function extendPolygon(polygon) {
 }
 
 // 2d "cross product" of 3d points lying on a 2d plane with Y = 0
-let crossProduct2d = function(lhs, rhs) {
+let crossProduct2d = function (lhs, rhs) {
   return lhs.x * rhs.z - lhs.z * rhs.x;
-}
+};
 
 // Filters hit test results to keep only the planes for which the used ray falls
 // within their polygon. Optionally, we can keep the last horizontal plane that
 // was hit.
-export function filterHitTestResults(hitTestResults,
-                                     keep_last_plane = false,
-                                     simplify_planes = false) {
+export function filterHitTestResults(hitTestResults, keep_last_plane = false, simplify_planes = false) {
   let result = hitTestResults.filter(hitTestResult => {
-
-    let polygon = simplify_planes ? simplifyPolygon(hitTestResult.plane.polygon)
-                                  : hitTestResult.plane.polygon;
+    let polygon = simplify_planes ? simplifyPolygon(hitTestResult.plane.polygon) : hitTestResult.plane.polygon;
 
     const hit_test_point = hitTestResult.point_on_plane;
 
@@ -268,7 +262,7 @@ export function filterHitTestResults(hitTestResults,
 
     let side = 0; // unknown, 1 = right, 2 = left
     let previous_point = polygon[polygon.length - 1];
-    for(let i = 0; i < polygon.length; ++i) {
+    for (let i = 0; i < polygon.length; ++i) {
       const current_point = polygon[i];
 
       const line_segment = sub(current_point, previous_point);
@@ -278,15 +272,15 @@ export function filterHitTestResults(hitTestResults,
       const turn_direction = normalize(turn_segment);
 
       const cosine_ray_segment = crossProduct2d(segment_direction, turn_direction);
-      if(side == 0) {
-        if(cosine_ray_segment > 0) {
+      if (side == 0) {
+        if (cosine_ray_segment > 0) {
           side = 1;
         } else {
           side = 2;
         }
       } else {
-        if(cosine_ray_segment > 0 && side == 2) return false;
-        if(cosine_ray_segment < 0 && side == 1) return false;
+        if (cosine_ray_segment > 0 && side == 2) return false;
+        if (cosine_ray_segment < 0 && side == 1) return false;
       }
 
       previous_point = current_point;
@@ -295,14 +289,15 @@ export function filterHitTestResults(hitTestResults,
     return true;
   });
 
-  if(keep_last_plane && hitTestResults.length > 0) {
-    const last_horizontal_plane_result = hitTestResults.slice().reverse().find(
-      element => {
+  if (keep_last_plane && hitTestResults.length > 0) {
+    const last_horizontal_plane_result = hitTestResults
+      .slice()
+      .reverse()
+      .find(element => {
         return element.plane.orientation == "horizontal";
       });
 
-    if(last_horizontal_plane_result
-      && result.findIndex(element => element === last_horizontal_plane_result) == -1) {
+    if (last_horizontal_plane_result && result.findIndex(element => element === last_horizontal_plane_result) == -1) {
       result.push(last_horizontal_plane_result);
     }
   }

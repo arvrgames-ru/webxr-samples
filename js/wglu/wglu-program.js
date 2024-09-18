@@ -27,12 +27,11 @@ locations, and attempts to take advantage of some browser's ability to link
 asynchronously by not querying any information from the program until it's
 first use.
 */
-var WGLUProgram = (function() {
-
+var WGLUProgram = (function () {
   "use strict";
 
   // Attempts to allow the browser to asynchronously compile and link
-  var Program = function(gl) {
+  var Program = function (gl) {
     this.gl = gl;
     this.program = gl.createProgram();
     this.attrib = null;
@@ -41,9 +40,9 @@ var WGLUProgram = (function() {
     this._firstUse = true;
     this._vertexShader = null;
     this._fragmentShader = null;
-  }
+  };
 
-  Program.prototype.attachShaderSource = function(source, type) {
+  Program.prototype.attachShaderSource = function (source, type) {
     var gl = this.gl;
     var shader;
 
@@ -64,26 +63,30 @@ var WGLUProgram = (function() {
     gl.attachShader(this.program, shader);
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
-  }
+  };
 
-  Program.prototype.attachShaderSourceFromXHR = function(url, type) {
+  Program.prototype.attachShaderSourceFromXHR = function (url, type) {
     var self = this;
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       var xhr = new XMLHttpRequest();
-      xhr.addEventListener("load", function (ev) {
-        if (xhr.status == 200) {
-          self.attachShaderSource(xhr.response, type);
-          resolve();
-        } else {
-          reject(xhr.statusText);
-        }
-      }, false);
+      xhr.addEventListener(
+        "load",
+        function (ev) {
+          if (xhr.status == 200) {
+            self.attachShaderSource(xhr.response, type);
+            resolve();
+          } else {
+            reject(xhr.statusText);
+          }
+        },
+        false
+      );
       xhr.open("GET", url, true);
       xhr.send(null);
     });
-  }
+  };
 
-  Program.prototype.attachShaderSourceFromTag = function(tagId, type) {
+  Program.prototype.attachShaderSourceFromTag = function (tagId, type) {
     var shaderTag = document.getElementById(tagId);
     if (!shaderTag) {
       console.error("Shader source tag not found:", tagId);
@@ -110,9 +113,9 @@ var WGLUProgram = (function() {
       k = k.nextSibling;
     }
     this.attachShaderSource(src, type);
-  }
+  };
 
-  Program.prototype.bindAttribLocation = function(attribLocationMap) {
+  Program.prototype.bindAttribLocation = function (attribLocationMap) {
     var gl = this.gl;
 
     if (attribLocationMap) {
@@ -122,17 +125,17 @@ var WGLUProgram = (function() {
         this.attrib[attribName] = attribLocationMap[attribName];
       }
     }
-  }
+  };
 
-  Program.prototype.transformFeedbackVaryings = function(varyings, type) {
+  Program.prototype.transformFeedbackVaryings = function (varyings, type) {
     gl.transformFeedbackVaryings(this.program, varyings, type);
-  }
+  };
 
-  Program.prototype.link = function() {
+  Program.prototype.link = function () {
     this.gl.linkProgram(this.program);
-  }
+  };
 
-  Program.prototype.use = function() {
+  Program.prototype.use = function () {
     var gl = this.gl;
 
     // If this is the first time the program has been used do all the error checking and
@@ -173,7 +176,7 @@ var WGLUProgram = (function() {
     }
 
     gl.useProgram(this.program);
-  }
+  };
 
   return Program;
 })();

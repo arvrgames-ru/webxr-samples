@@ -1,4 +1,4 @@
-self.addEventListener('notificationclick', (event) => {
+self.addEventListener("notificationclick", event => {
   event.notification.close();
 
   if (!event.action) {
@@ -6,6 +6,6 @@ self.addEventListener('notificationclick', (event) => {
     return;
   }
 
-  console.log('Action ID:', event.action);
-  console.log('Reply text:', event.reply);
+  console.log("Action ID:", event.action);
+  console.log("Reply text:", event.reply);
 });
